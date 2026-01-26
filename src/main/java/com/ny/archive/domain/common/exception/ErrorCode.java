@@ -16,6 +16,7 @@ public enum ErrorCode {
 
     private final String message;
 
+    // 에러코드에 따라 그 뒤의 메시지를 저장해둠
     ErrorCode(String message) {
         this.message = message;
     }

@@ -2,8 +2,6 @@ package com.ny.archive.board.dto;
 
 import com.ny.archive.board.domain.Board;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Getter

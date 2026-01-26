@@ -22,4 +22,10 @@ public class BoardService {
         Board board = requestDto.toEntity();
         return new BoardResponseDto(boardRepository.save(board));
     }
+
+    public List<BoardResponseDto> getBoardList(){
+        return boardRepository.findAllByOrderByCreatedAtDesc()
+                .stream().map(BoardResponseDto::new)
+                .toList();
+    }
 }

@@ -27,6 +27,13 @@ public class BoardService {
     }
 
     @Transactional
+    public BoardResponseDto getBoard(Long id) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+        return new BoardResponseDto(board);
+    }
+
+    @Transactional
     public List<BoardResponseDto> getBoardList() {
         return boardRepository.findAllByOrderByCreatedAtDesc()
                 .stream().map(BoardResponseDto::new)
@@ -57,7 +64,7 @@ public class BoardService {
     public Long deleteBoard(Long id, BoardDeleteRequestDto deleteRequestDto) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
-        if (!board.getPassword().equals(requestDto.getPassword())) {
+        if (!board.getPassword().equals(deleteRequestDto.getPassword())) {
             throw new CustomException((ErrorCode.INVALID_PASSWORD));
         }
 

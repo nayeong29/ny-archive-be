@@ -25,6 +25,12 @@ public class BoardController {
         return boardService.createBoard(requestDto);
     }
 
+    @Operation(summary = "방명록 조회")
+    @GetMapping("/{id}")
+    public BoardResponseDto getBoard(@Parameter(description = "게시글 ID") @PathVariable Long id) {
+        return boardService.getBoard(id);
+    }
+
     @Operation(summary = "방명록 목록 전체 조회")
     @GetMapping
     public List<BoardResponseDto> getBoardList() {

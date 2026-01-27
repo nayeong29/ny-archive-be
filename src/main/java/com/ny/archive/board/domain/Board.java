@@ -3,7 +3,10 @@ package com.ny.archive.board.domain;
 import com.ny.archive.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -31,19 +34,20 @@ public class Board extends BaseEntity {
     private String password;
 
     // 빌더: Service 계층에서 새로운 데이터를 DB에 저장하기 위한 객체 생성시 사용
+    // 내가 사용하는 생성자
     @Builder
-    public Board(String author, String content, Integer stickerId, String password){
-        this.author=author;
-        this.content=content;
-        this.stickerId=stickerId;
-        this.password=password;
+    public Board(String author, String content, Integer stickerId, String password) {
+        this.author = author;
+        this.content = content;
+        this.stickerId = stickerId;
+        this.password = password;
     }
 
     // 수정용 메서드
-    public void update(String author, String content, Integer stickerId){
-        this.author=author;
-        this.content=content;
-        this.stickerId=stickerId;
+    public void update(String author, String content, Integer stickerId) {
+        this.author = author;
+        this.content = content;
+        this.stickerId = stickerId;
     }
 
 }

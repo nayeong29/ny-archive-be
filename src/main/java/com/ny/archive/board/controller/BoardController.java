@@ -1,5 +1,6 @@
 package com.ny.archive.board.controller;
 
+import com.ny.archive.board.dto.BoardDeleteRequestDto;
 import com.ny.archive.board.dto.BoardRequestDto;
 import com.ny.archive.board.dto.BoardResponseDto;
 import com.ny.archive.board.service.BoardService;
@@ -40,7 +41,7 @@ public class BoardController {
     @Operation(summary = "방명록 삭제")
     @DeleteMapping("/{id}")
     public Long deleteBoard(@Parameter(description = "게시글 ID") @PathVariable Long id,
-                            @RequestBody BoardRequestDto requestDto) {
-        return boardService.deleteBoard(id, requestDto);
+                            @RequestBody BoardDeleteRequestDto deleteRequestDto) {
+        return boardService.deleteBoard(id, deleteRequestDto);
     }
 }

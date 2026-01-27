@@ -1,6 +1,7 @@
 package com.ny.archive.board.service;
 
 import com.ny.archive.board.domain.Board;
+import com.ny.archive.board.dto.BoardDeleteRequestDto;
 import com.ny.archive.board.dto.BoardRequestDto;
 import com.ny.archive.board.dto.BoardResponseDto;
 import com.ny.archive.board.repository.BoardRepository;
@@ -53,7 +54,7 @@ public class BoardService {
     }
 
     @Transactional
-    public Long deleteBoard(Long id, BoardRequestDto requestDto) {
+    public Long deleteBoard(Long id, BoardDeleteRequestDto deleteRequestDto) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
         if (!board.getPassword().equals(requestDto.getPassword())) {

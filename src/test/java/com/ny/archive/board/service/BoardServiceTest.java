@@ -54,22 +54,31 @@ class BoardServiceTest {
     @Test
     @DisplayName("방명록 조회 성공 - 알맞은 ID로 조회 시 방명록이 조회된다")
     void getBoard() {
-        // Given
-        given(boardRepository.findById(testId))
-                .willReturn(Optional.of(commonBoard));
+        // 1. Given
+        // 가짜 레포지토리에서 1번 아이디를 찾으면 위에서 만든 board 를 뱉어내게 함
+        given(boardRepository.findById(testId)).willReturn(Optional.of(commonBoard));
 
-        // When
+        // 2. When
+        // 서비스가 가짜 레포지토리에서 1번 아이디를 찾기 시작함
+        // Given 에서 합의한대로 뱉은 board로 Service 로직을 돌림
         BoardResponseDto result = boardService.getBoard(testId);
 
         // Then
         assertThat(result.getAuthor()).isEqualTo(commonBoard.getAuthor());
-
     }
 
     @Test
     @DisplayName("방명록 조회 실패 - 없는 ID로  조회 시 방명록이 조회된다")
     void getBoardException() {
+        // Given
+        // 레포가 빈 객체를 뱉도록 함
+        given(boardRepository.findById(testId)).willReturn(Optional.empty());
 
+        // When & Then
+        // 빈 객체가 들어왔을때 정상적으로 Exception 이 터지는지 확인
+        assertThrows(CustomException.class, () -> {
+            boardService.getBoard(testId);
+        });
     }
 
     @Test
@@ -110,7 +119,7 @@ class BoardServiceTest {
         given(boardRepository.findById(testId)).willReturn(Optional.of(commonBoard));
 
         // 2. When
-        BoardResponseDto responseDto = boardService.updateBoard(testId, requestDto);
+        boardService.updateBoard(testId, requestDto);
 
         // 3. Then
         assertAll(

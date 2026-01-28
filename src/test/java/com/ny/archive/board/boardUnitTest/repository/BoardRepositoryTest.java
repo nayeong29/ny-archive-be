@@ -1,6 +1,7 @@
-package com.ny.archive.board.repository;
+package com.ny.archive.board.boardUnitTest.repository;
 
 import com.ny.archive.board.domain.Board;
+import com.ny.archive.board.repository.BoardRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

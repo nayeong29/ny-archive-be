@@ -2,6 +2,8 @@ package com.ny.archive.board.service;
 
 import com.ny.archive.board.domain.Board;
 import com.ny.archive.board.dto.BoardDeleteRequestDto;
+import com.ny.archive.board.dto.BoardRequestDto;
+import com.ny.archive.board.dto.BoardResponseDto;
 import com.ny.archive.board.repository.BoardRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -61,5 +64,41 @@ class BoardServiceTest {
 
     }
 
+    @Test
+    void 게시글_수정_성공_테스트() {
+        //given
+        Long id = 1L;
+        String password = "123456";
+        String author = "나영";
+        String content = "우정";
+        Integer stickerId = 1;
 
+        Board board = Board.builder()
+                .password(password)
+                .author(author)
+                .content(content)
+                .stickerId(stickerId)
+                .build();
+
+        ReflectionTestUtils.setField(board, "id", id);
+        ReflectionTestUtils.setField(board, "createdAt", LocalDateTime.now());
+
+        BoardRequestDto requestDto = BoardRequestDto.builder()
+                .password(password)
+                .author("나뇽")
+                .content("수정")
+                .stickerId(stickerId)
+                .build();
+
+        given(boardRepository.findById(id)).willReturn(Optional.of(board));
+
+        // when
+        BoardResponseDto responseDto = boardService.updateBoard(id, requestDto);
+
+        //then
+        assertAll(
+                () -> assertThat(board.getContent()).isEqualTo("수정"),
+                () -> assertThat(board.getAuthor()).isEqualTo("나뇽")
+        );
+    }
 }

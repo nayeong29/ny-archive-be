@@ -11,16 +11,18 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+// JPA 테스트용 어노테이션
+// 테스트가 끝나면 자동으로 롤백
 @DataJpaTest
 class BoardRepositoryTest {
 
-    @Autowired
+    @Autowired // BoardRepository 빈 주입
     private BoardRepository boardRepository;
 
     @Test
-    @DisplayName("최신순 정렬 조회 테스트 - 게시글이 생성일 내림차순으로 조회되어야 한다")
+    @DisplayName("최신순 정렬 조회 테스트 - 방명록이 생성일 내림차순으로 조회되어야 한다")
     void findAllByOrderByCreatedAtDesc() {
-        // 1. Given: 시간차를 두고 게시글 2개 저장
+        // 1. Given: 시간차를 두고 방명록 2개 저장
         Board board1 = Board.builder()
                 .author("나영")
                 .content("내용")

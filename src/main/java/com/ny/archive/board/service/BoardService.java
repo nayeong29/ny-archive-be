@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor // 레포 주입을 위해 필요함
+@RequiredArgsConstructor // 레포 Bean 주입을 위해 생성자 만들어줌 (Final Only)
 @Transactional(readOnly = true)
 public class BoardService {
 

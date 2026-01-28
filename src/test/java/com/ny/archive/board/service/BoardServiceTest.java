@@ -52,8 +52,29 @@ class BoardServiceTest {
     }
 
     @Test
+    @DisplayName("방명록 조회 성공 - 알맞은 ID로 조회 시 방명록이 조회된다")
+    void getBoard() {
+        // Given
+        given(boardRepository.findById(testId))
+                .willReturn(Optional.of(commonBoard));
+
+        // When
+        BoardResponseDto result = boardService.getBoard(testId);
+
+        // Then
+        assertThat(result.getAuthor()).isEqualTo(commonBoard.getAuthor());
+
+    }
+
+    @Test
+    @DisplayName("방명록 조회 실패 - 없는 ID로  조회 시 방명록이 조회된다")
+    void getBoardException() {
+
+    }
+
+    @Test
     @DisplayName("방명록 삭제 성공 - 올바른 비밀번호 입력 시 방명록이 삭제된다")
-    void 게시글_삭제_성공_테스트() {
+    void deleteBoard() {
         // 1. Given
         // 삭제 요청을 보낼 가짜 RequestDto 만들기
         BoardDeleteRequestDto requestDto = BoardDeleteRequestDto.builder()
@@ -76,7 +97,7 @@ class BoardServiceTest {
 
     @Test
     @DisplayName("방명록 수정 성공 - 올바른 비밀번호 입력 시 방명록이 수정된다")
-    void 방명록_수정_성공_테스트() {
+    void updateBoard() {
         // 1. Given
         // 수정하는 값으로 날릴 가짜 requestDto 만들기
         BoardRequestDto requestDto = BoardRequestDto.builder()
@@ -101,7 +122,7 @@ class BoardServiceTest {
 
     @Test
     @DisplayName("방명록 수정 실패 - 틀린 비밀번호 입력 시 Exception 을 출력한다")
-    void 방명록_수정_실패_테스트() {
+    void updateBoardException() {
         // 1. Given
         // 가짜 Dto 만들기
         BoardRequestDto wrongRequestDto = BoardRequestDto.builder()

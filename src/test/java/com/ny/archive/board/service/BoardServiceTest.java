@@ -5,6 +5,9 @@ import com.ny.archive.board.dto.BoardDeleteRequestDto;
 import com.ny.archive.board.dto.BoardRequestDto;
 import com.ny.archive.board.dto.BoardResponseDto;
 import com.ny.archive.board.repository.BoardRepository;
+import com.ny.archive.domain.common.exception.CustomException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +20,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -31,74 +35,89 @@ class BoardServiceTest {
     @InjectMocks
     private BoardService boardService;
 
-    @Test
-    void 게시글_삭제_성공_테스트() {
-        // Given
-        Long id = 1L;
-        String password = "123456";
+    private Board commonBoard;
+    private final Long testId = 1L;
 
-        // 빌더를 사용하여 가짜 Board entity 만들기
-        Board board = Board.builder()
-                .password(password)
+    @BeforeEach
+    void init() {
+        commonBoard = Board.builder()
+                .password("12345")
+                .author("나영")
+                .content("기본 내용")
+                .stickerId(1)
                 .build();
+        ReflectionTestUtils.setField(commonBoard, "id", testId);
+        ReflectionTestUtils.setField(commonBoard, "createdAt", LocalDateTime.now());
 
-        // 테스트를 위해 private 필드에 값을 넣음 (Board entity의 생성자에는 id를 넣지 않았음)
-        ReflectionTestUtils.setField(board, "id", id);
+    }
 
+    @Test
+    @DisplayName("방명록 삭제 성공 - 올바른 비밀번호 입력 시 방명록이 삭제된다")
+    void 게시글_삭제_성공_테스트() {
+        // 1. Given
         // 삭제 요청을 보낼 가짜 RequestDto 만들기
         BoardDeleteRequestDto requestDto = BoardDeleteRequestDto.builder()
-                .password(password)
+                .password("12345")
                 .build();
 
         // 가짜 레포지토리가 1번 아이디를 찾으면 위에서 만든 board 를 뱉어내게 함
-        given(boardRepository.findById(id)).willReturn(Optional.of(board));
+        given(boardRepository.findById(testId)).willReturn(Optional.of(commonBoard));
 
-        // when: 서비스 실행
-        Long deleteBoardId = boardService.deleteBoard(id, requestDto);
+        // 2. When: 서비스 실행
+        Long deleteBoardId = boardService.deleteBoard(testId, requestDto);
 
-        // then: 결과 맞는지 검증
+        // 3. Then: 결과 맞는지 검증
         assertAll(
-                () -> assertThat(deleteBoardId).isEqualTo(id),
+                () -> assertThat(deleteBoardId).isEqualTo(testId),
                 () -> verify(boardRepository, times(1)).delete(any(Board.class))
         );
 
     }
 
     @Test
-    void 게시글_수정_성공_테스트() {
-        //given
-        Long id = 1L;
-        String password = "123456";
-        String author = "나영";
-        String content = "우정";
-        Integer stickerId = 1;
-
-        Board board = Board.builder()
-                .password(password)
-                .author(author)
-                .content(content)
-                .stickerId(stickerId)
-                .build();
-
-        ReflectionTestUtils.setField(board, "id", id);
-        ReflectionTestUtils.setField(board, "createdAt", LocalDateTime.now());
-
+    @DisplayName("방명록 수정 성공 - 올바른 비밀번호 입력 시 방명록이 수정된다")
+    void 방명록_수정_성공_테스트() {
+        // 1. Given
+        // 수정하는 값으로 날릴 가짜 requestDto 만들기
         BoardRequestDto requestDto = BoardRequestDto.builder()
-                .password(password)
+                .password("12345")
                 .author("나뇽")
                 .content("수정")
-                .stickerId(stickerId)
+                .stickerId(2)
                 .build();
 
-        given(boardRepository.findById(id)).willReturn(Optional.of(board));
+        given(boardRepository.findById(testId)).willReturn(Optional.of(commonBoard));
 
-        // when
-        BoardResponseDto responseDto = boardService.updateBoard(id, requestDto);
+        // 2. When
+        BoardResponseDto responseDto = boardService.updateBoard(testId, requestDto);
 
-        //then
+        // 3. Then
         assertAll(
-                () -> assertThat(board.getContent()).isEqualTo("수정"),
-                () -> assertThat(board.getAuthor()).isEqualTo("나뇽")
+                () -> assertThat(commonBoard.getContent()).isEqualTo("수정"),
+                () -> assertThat(commonBoard.getStickerId()).isEqualTo(2),
+                () -> assertThat(commonBoard.getAuthor()).isEqualTo("나뇽")
         );
+    }
+
+    @Test
+    @DisplayName("방명록 수정 실패 - 틀린 비밀번호 입력 시 Exception 을 출력한다")
+    void 방명록_수정_실패_테스트() {
+        // 1. Given
+        // 가짜 Dto 만들기
+        BoardRequestDto wrongRequestDto = BoardRequestDto.builder()
+                .password("123")
+                .author("나뇽")
+                .content("수정")
+                .stickerId(2)
+                .build();
+
+        given(boardRepository.findById(testId)).willReturn(Optional.of(commonBoard));
+
+        // 2. When & Then
+        // 첫 번째 인자: 어떤 종류의 에러가 터질지 미리 알려줌
+        // 두 번째 인자: 에러를 일으킬 로직
+        assertThrows(CustomException.class, () -> {
+            boardService.updateBoard(testId, wrongRequestDto);
+        });
     }
 }

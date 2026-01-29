@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    # 테스트 전용 DB가 있다면 그 이름을 적고, 없다면 일단 로컬과 같은 걸 적어줘
+    url: jdbc:mysql://localhost:3306/archive_test?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: codingwhgdk
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # 테스트는 실행될 때마다 테이블을 새로 만들고 종료 시 지우는 게 가장 깔끔해!
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

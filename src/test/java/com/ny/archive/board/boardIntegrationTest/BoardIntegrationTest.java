@@ -18,8 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -54,7 +53,7 @@ public class BoardIntegrationTest {
         ResultActions resultActions = mockMvc.perform(
                 post("/api/boards")
                         .contentType(MediaType.APPLICATION_JSON) // 지금 보내는건 JSON 데이터임을 서버에 알림
-                        .content(jsonRequest)
+                        .content(jsonRequest) // 실제 JSON 데이터를 본문에 담음
         );
 
         // 3. Then: 응답 상태 코드가 200인지 확인
@@ -75,5 +74,46 @@ public class BoardIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedId))
                 .andExpect(jsonPath("$.author").value("나영"));
+    }
+
+    @Test
+    @DisplayName("방명록 수정 성공 시나리오")
+    void updateBoardTest() throws Exception {
+        // 1. Given: 데이터 만들기
+        Board board = Board.builder()
+                .author("나영")
+                .content("내용")
+                .stickerId(1)
+                .password("1234")
+                .build();
+
+        Board savedBoard = boardRepository.save(board);
+        Long savedId = savedBoard.getId();
+
+        // 수정할 내용 담은 RequestDto 만들기
+        BoardRequestDto requestDto = BoardRequestDto.builder()
+                .author("주연")
+                .content("수정")
+                .stickerId(2)
+                .password("1234")
+                .build();
+
+        // 자바 객체 JSON 객체로 만들기
+        String jsonRequest = objectMapper.writeValueAsString(requestDto);
+
+        // 2. When: 수정 요청하는 api 날리기
+        ResultActions resultActions = mockMvc.perform(
+                put("/api/boards/{id}", savedId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+        );
+
+        // 3. Then: 결과 확인 (상태 코드 및 수정 내용)
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").value("수정"));
+
+        // DB 에서도 바뀌었는지 결과 확인
+        Board updatedBoard = boardRepository.findById(savedId).orElseThrow();
+        assertThat(updatedBoard.getAuthor()).isEqualTo("주연");
     }
 }

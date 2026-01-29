@@ -1,6 +1,7 @@
 spring:
   application:
     name: ny-archive-be
+
   datasource:
     # MySQL 드라이버 설정
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -10,9 +11,9 @@ spring:
     password: ${MYSQL_PASSWORD}
 
   jpa:
-    hibernate:
-      # 서버 실행 시 엔티티를 보고 테이블을 자동으로 업데이트 해줌
-      ddl-auto: update
+    # hibernate:
+    # 서버 실행 시 엔티티를 보고 테이블을 자동으로 업데이트 해줌
+    # ddl-auto: update
     # 실행되는 SQL 쿼리를 콘솔창에 예쁘게 보여주는 설정
     show-sql: true
     properties:

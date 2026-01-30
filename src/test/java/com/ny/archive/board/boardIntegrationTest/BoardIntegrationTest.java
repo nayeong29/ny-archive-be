@@ -2,6 +2,7 @@ package com.ny.archive.board.boardIntegrationTest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ny.archive.board.domain.Board;
+import com.ny.archive.board.dto.BoardDeleteRequestDto;
 import com.ny.archive.board.dto.BoardRequestDto;
 import com.ny.archive.board.repository.BoardRepository;
 import com.ny.archive.domain.common.exception.ErrorCode;
@@ -21,8 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -154,12 +154,50 @@ public class BoardIntegrationTest {
 
         // 3. Then: 실패 검증
         resultActions.andExpect(status().isBadRequest())
-                .andExpect(content().value(ErrorCode.INVALID_PASSWORD));
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_PASSWORD.getMessage()));
 
         // DB 바뀌지 않음을 확인
         Board notUpdatedBoard = boardRepository.findById(savedId).orElseThrow();
         assertThat(notUpdatedBoard.getContent()).isEqualTo("내용");
 
+    }
+
+    @Test
+    @DisplayName("방명록 삭제 성공 시나리오")
+    void deleteBoardTest() throws Exception {
+        // 1. Given: 데이터 만들기
+        Board board = Board.builder()
+                .author("나영")
+                .content("내용")
+                .stickerId(1)
+                .password("1234")
+                .build();
+
+        Board savedBoard = boardRepository.save(board);
+        Long savedId = savedBoard.getId();
+
+        // 삭제 RequestDto 만들기
+        BoardDeleteRequestDto deleteRequestDto = BoardDeleteRequestDto.builder()
+                .password("1234")
+                .build();
+
+        // JSON 으로 변환
+        String jsonRequest = objectMapper.writeValueAsString(deleteRequestDto);
+
+        // 2. When: 삭제 api 호출
+        ResultActions resultActions = mockMvc.perform(
+                delete("/api/boards/{id}", savedId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+        );
+
+        // 3. Then: 성공 검증
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().string(savedId.toString())); // 본문 내용에 접근 (content)
+
+        // DB 에서 사라졌는지 확인
+        boolean exists = boardRepository.existsById(savedId);
+        assertThat(exists).isFalse();
     }
 
 

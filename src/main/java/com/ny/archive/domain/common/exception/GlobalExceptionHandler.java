@@ -11,11 +11,11 @@ public class GlobalExceptionHandler {
 
     // 내가 만든 CustomException이 터지면 이 메서드가 가로챔
     @ExceptionHandler(CustomException.class) // 특정 예외를 지정하줌 (CustomException)
-    public ResponseEntity<String> handleCustomException(CustomException e) {
+    public ResponseEntity<ErrorResponseDto> handleCustomException(CustomException e) {
         // CustomException (e) 안에 있던 ErrorCode에서 메시지를 꺼내서 프론트한테 전송
         return ResponseEntity // 스프링 전용 응답 객체
                 .status(HttpStatus.BAD_REQUEST)
-                .body(e.getMessage());
+                .body(new ErrorResponseDto(e.getMessage()));
     }
 
     // 그 외 일반적인 에러들 처리

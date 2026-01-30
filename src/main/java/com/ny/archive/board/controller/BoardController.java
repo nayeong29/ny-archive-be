@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
+@RequiredArgsConstructor // Service Bean 주입을 위한 생성자 만들기 (Final Only)
 @RequestMapping("/api/boards")
 @Tag(name = "방명록 API", description = "방명록 작성, 조회, 수정, 삭제 기능을 제공합니다.")
 public class BoardController {

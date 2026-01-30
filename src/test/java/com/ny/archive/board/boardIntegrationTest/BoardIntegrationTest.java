@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ny.archive.board.domain.Board;
 import com.ny.archive.board.dto.BoardRequestDto;
 import com.ny.archive.board.repository.BoardRepository;
+import com.ny.archive.domain.common.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,4 +119,48 @@ public class BoardIntegrationTest {
         Board updatedBoard = boardRepository.findById(savedId).orElseThrow();
         assertThat(updatedBoard.getAuthor()).isEqualTo("주연");
     }
+
+    @Test
+    @DisplayName("방명록 수정 실패 시나리오 - 비밀번호 불일치")
+    void updateBoardFailTest() throws Exception {
+        // 1. Given: 데이터 만들기
+        Board board = Board.builder()
+                .author("나영")
+                .content("내용")
+                .stickerId(1)
+                .password("1234")
+                .build();
+
+        Board savedBoard = boardRepository.save(board);
+        Long savedId = savedBoard.getId();
+
+        // 수정할 내용 담은 RequestDto 만들기
+        BoardRequestDto requestDto = BoardRequestDto.builder()
+                .author("주연")
+                .content("수정")
+                .stickerId(2)
+                .password("123")
+                .build();
+
+        // JSON 객체 만들기
+        String jsonRequest = objectMapper.writeValueAsString(requestDto);
+
+        // When: 수정 API 호출
+        ResultActions resultActions = mockMvc.perform(
+                put("/api/boards/{id}", savedId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest)
+        );
+
+        // 3. Then: 실패 검증
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(content().value(ErrorCode.INVALID_PASSWORD));
+
+        // DB 바뀌지 않음을 확인
+        Board notUpdatedBoard = boardRepository.findById(savedId).orElseThrow();
+        assertThat(notUpdatedBoard.getContent()).isEqualTo("내용");
+
+    }
+
+
 }

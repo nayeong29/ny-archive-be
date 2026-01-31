@@ -2,8 +2,10 @@ package com.ny.archive.domain.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 
 // 프로젝트 전체에서 발생하는 예외 감시
 @RestControllerAdvice // 프로젝트 전역에서 발생하는 예외를 잡는 관제탑임을 선언
@@ -18,11 +20,22 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDto(e.getMessage()));
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponseDto> handleValidationException(
+            MethodArgumentNotValidException e) {
+        String errorMessage = e.getBindingResult().getFieldError().getDefaultMessage();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto(errorMessage));
+    }
+
     // 그 외 일반적인 에러들 처리
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception e) {
+    public ResponseEntity<ErrorResponseDto> handleException(Exception e) {
+        System.out.println("알 수 없는 에러 발생: " + e.getMessage());
         return ResponseEntity
                 .internalServerError() // HTTP 상태 코드 500 (서버 내부 오류)
-                .body("관리자에게 문의하세요.");
+                .body(new ErrorResponseDto("관리자에게 문의하세요."));
     }
 }

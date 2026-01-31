@@ -7,6 +7,7 @@ import com.ny.archive.board.service.BoardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class BoardController {
 
     @Operation(summary = "방명록 작성")
     @PostMapping
-    public BoardResponseDto createBoard(@RequestBody BoardRequestDto requestDto) {
+    public BoardResponseDto createBoard(@Valid @RequestBody BoardRequestDto requestDto) {
         return boardService.createBoard(requestDto);
     }
 
@@ -39,14 +40,14 @@ public class BoardController {
 
     @Operation(summary = "방명록 수정")
     @PutMapping("/{id}")
-    public BoardResponseDto updateBoard(@Parameter(description = "게시글 ID") @PathVariable Long id,
+    public BoardResponseDto updateBoard(@Valid @Parameter(description = "게시글 ID") @PathVariable Long id,
                                         @RequestBody BoardRequestDto requestDto) {
         return boardService.updateBoard(id, requestDto);
     }
 
     @Operation(summary = "방명록 삭제")
     @DeleteMapping("/{id}")
-    public Long deleteBoard(@Parameter(description = "게시글 ID") @PathVariable Long id,
+    public Long deleteBoard(@Valid @Parameter(description = "게시글 ID") @PathVariable Long id,
                             @RequestBody BoardDeleteRequestDto deleteRequestDto) {
         return boardService.deleteBoard(id, deleteRequestDto);
     }

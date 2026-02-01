@@ -21,7 +21,7 @@ public class Board extends BaseEntity {
     @NotNull // 자바 레벨 제약
     private String author;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     @NotNull
     private String content;
 

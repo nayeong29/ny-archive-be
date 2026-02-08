@@ -1,4 +1,4 @@
-package com.ny.archive.domain.common.exception;
+package com.ny.archive.common.dto;
 
 import lombok.Getter;
 

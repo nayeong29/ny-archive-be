@@ -2,6 +2,7 @@ package com.ny.archive.board.dto;
 
 import com.ny.archive.board.domain.Board;
 import lombok.Getter;
+
 import java.time.format.DateTimeFormatter;
 
 @Getter
@@ -15,12 +16,12 @@ public class BoardResponseDto {
     private final String createdAt;
 
     // 생성자
-    public BoardResponseDto (Board board){
-        this.id= board.getId();
-        this.author= board.getAuthor();
-        this.content= board.getContent();
-        this.stickerId= board.getStickerId();
-        this.createdAt= board.getCreatedAt()
-                .format(DateTimeFormatter.ofPattern("yy/MM/dd HH:mm"));
+    public BoardResponseDto(Board board) {
+        this.id = board.getId();
+        this.author = board.getAuthor();
+        this.content = board.getContent();
+        this.stickerId = board.getStickerId();
+        this.createdAt = board.getCreatedAt()
+                .format(DateTimeFormatter.ofPattern("MM/dd"));
     }
 }

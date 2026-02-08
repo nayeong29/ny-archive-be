@@ -6,7 +6,7 @@ import com.ny.archive.board.dto.BoardRequestDto;
 import com.ny.archive.board.dto.BoardResponseDto;
 import com.ny.archive.board.repository.BoardRepository;
 import com.ny.archive.board.service.BoardService;
-import com.ny.archive.domain.common.exception.CustomException;
+import com.ny.archive.common.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

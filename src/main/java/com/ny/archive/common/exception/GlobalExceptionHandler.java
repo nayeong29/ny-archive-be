@@ -1,5 +1,6 @@
-package com.ny.archive.domain.common.exception;
+package com.ny.archive.common.exception;
 
+import com.ny.archive.common.dto.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

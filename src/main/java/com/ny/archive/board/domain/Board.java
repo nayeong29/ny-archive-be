@@ -1,6 +1,6 @@
 package com.ny.archive.board.domain;
 
-import com.ny.archive.domain.common.BaseEntity;
+import com.ny.archive.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;

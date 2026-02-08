@@ -5,7 +5,7 @@ import com.ny.archive.board.domain.Board;
 import com.ny.archive.board.dto.BoardDeleteRequestDto;
 import com.ny.archive.board.dto.BoardRequestDto;
 import com.ny.archive.board.repository.BoardRepository;
-import com.ny.archive.domain.common.exception.ErrorCode;
+import com.ny.archive.common.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,8 @@ public class BoardIntegrationTest {
         );
 
         // 실제로 조회가 되는지 GET 요청을 이어서 보내보기
-        mockMvc.perform(get("/api/boards/{id}", savedId))
+        mockMvc.perform(
+                        get("/api/boards/{id}", savedId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedId))
                 .andExpect(jsonPath("$.author").value("나영"));

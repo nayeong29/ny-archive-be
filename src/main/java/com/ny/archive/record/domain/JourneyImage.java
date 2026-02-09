@@ -11,15 +11,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RecordImage extends BaseEntity {
+public class JourneyImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "record_id")
-    private Record record;
+    @JoinColumn(name = "journey_id")
+    private Journey journey;
 
     @Column(nullable = false)
     @NotNull
@@ -30,14 +30,14 @@ public class RecordImage extends BaseEntity {
     private boolean isThumbnail;
 
     @Builder
-    public RecordImage(String fileName, boolean isThumbnail) {
+    public JourneyImage(String fileName, boolean isThumbnail) {
         this.fileName = fileName;
         this.isThumbnail = isThumbnail;
     }
 
     // 부모 연결: 외부 노출 방지를 위해 protected
-    protected void setRecord(Record record) {
-        this.record = record;
+    protected void setJourney(Journey journey) {
+        this.journey = journey;
     }
 
 }

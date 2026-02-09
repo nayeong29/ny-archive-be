@@ -1,4 +1,4 @@
 package com.ny.archive.record.dto;
 
-public class RecordRequestDto {
+public class JourneyResponseDto {
 }

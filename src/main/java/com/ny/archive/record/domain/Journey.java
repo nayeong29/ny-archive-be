@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Record extends BaseEntity {
+public class Journey extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class Record extends BaseEntity {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     @NotNull
-    private String description;
+    private String review;
 
     @Column(nullable = false)
     @NotNull
@@ -44,44 +44,44 @@ public class Record extends BaseEntity {
 
     @Column(nullable = false)
     @NotNull
-    private LocalDate date;
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    @NotNull
+    private LocalDate endDate;
 
     @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
             FetchType.LAZY)
-    private List<RecordImage> recordImages = new ArrayList<>();
+    private List<JourneyImage> journeyImages = new ArrayList<>();
 
-    @Column(nullable = false)
-    @NotNull
-    private Double latitude;
-
-    @Column(nullable = false)
-    @NotNull
-    private Double longitude;
 
     @Builder
-    public Record(String country, String state, String description,
-                  Integer rate, Category category, LocalDate date,
-                  Double latitude, Double longitude) {
+    public Journey(String country,
+                   String state,
+                   String review,
+                   Integer rate,
+                   Category category,
+                   LocalDate startDate,
+                   LocalDate endDate) {
         this.country = country;
         this.state = state;
-        this.description = description;
+        this.review = review;
         this.rate = rate;
         this.category = category;
-        this.date = date;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     // 연관관계 메서드: RecordImage 추가 메서드 (사진 한 장 추가)
-    public void addRecordImage(RecordImage recordImage) {
-        this.recordImages.add(recordImage); // 단일 객체 타입이 아니라서 add를 해줘야 함
-        recordImage.setRecord(this);
+    public void addRecordImage(JourneyImage journeyImage) {
+        this.journeyImages.add(journeyImage); // 단일 객체 타입이 아니라서 add를 해줘야 함
+        journeyImage.setJourney(this);
     }
 
     // 사진 여러개 추가
-    public void addRecordImages(List<RecordImage> recordImages) {
-        for (RecordImage recordImage : recordImages) {
-            this.addRecordImage(recordImage);
+    public void addRecordImages(List<JourneyImage> journeyImages) {
+        for (JourneyImage journeyImage : journeyImages) {
+            this.addRecordImage(journeyImage);
         }
     }
 }

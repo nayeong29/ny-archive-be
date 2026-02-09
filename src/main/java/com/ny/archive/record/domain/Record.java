@@ -81,7 +81,7 @@ public class Record extends BaseEntity {
     // 사진 여러개 추가
     public void addRecordImages(List<RecordImage> recordImages) {
         for (RecordImage recordImage : recordImages) {
-            this.recordImages.add(recordImage);
+            this.addRecordImage(recordImage);
         }
     }
 }

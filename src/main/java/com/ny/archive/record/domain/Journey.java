@@ -84,4 +84,20 @@ public class Journey extends BaseEntity {
             this.addRecordImage(journeyImage);
         }
     }
+
+    public void update(String country,
+                       String state,
+                       String review,
+                       Integer rate,
+                       Category category,
+                       LocalDate startDate,
+                       LocalDate endDate) {
+        this.country = country;
+        this.state = state;
+        this.review = review;
+        this.rate = rate;
+        this.category = category;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }

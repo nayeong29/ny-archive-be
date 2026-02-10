@@ -19,7 +19,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class JourneyRequestDto {
-    
+
     @Schema(description = "방문 국가", example = "Japan", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "나라는 필수 입력값입니다")
     private String country;
@@ -55,8 +55,8 @@ public class JourneyRequestDto {
     @Schema(description = "업로드할 이미지 파일명 리스트", example = "[\"sushi.jpg\", \"tokyo.jpg\"]")
     private List<String> imageNames = new ArrayList<>(); // 엔티티 대신 파일명 리스트로 변경!
 
-    public void toEntity() {
-        Journey journey = Journey.builder()
+    public Journey toEntity() {
+        return Journey.builder()
                 .country(this.country)
                 .state(this.state)
                 .review(this.review)

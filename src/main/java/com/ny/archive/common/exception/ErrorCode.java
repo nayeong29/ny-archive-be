@@ -5,8 +5,9 @@ import lombok.Getter;
 // 어떤 에러가 있는지 목록 정리하는 Enum
 @Getter
 public enum ErrorCode {
-    // 1. ID로 찾았을 때 해당 게시글이 없는 경우
+    // 1. ID로 찾았을 때 해당 없는 경우
     BOARD_NOT_FOUND("해당 게시글이 존재하지 않습니다."),
+    JOURNEY_NOT_FOUND("해당 여행이 존재하지 않습니다."),
 
     // 2. 수정/삭제 시 비밀번호가 틀린 경우
     INVALID_PASSWORD("비밀번호가 일치하지 않습니다."),

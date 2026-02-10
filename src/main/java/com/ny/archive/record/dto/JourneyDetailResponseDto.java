@@ -23,6 +23,7 @@ public class JourneyDetailResponseDto {
 
     private final List<String> imageUrls;
 
+
     public JourneyDetailResponseDto(Journey journey) {
         this.id = journey.getId();
         this.country = journey.getCountry();
@@ -36,9 +37,7 @@ public class JourneyDetailResponseDto {
 
         this.imageUrls = journey.getJourneyImages()
                 .stream()
-                .map(journeyImage
-                             -> "http://localhost:8080/images/"
-                        + journeyImage.getFileName())
+                .map(journeyImage -> journeyImage.getFullImagePath())
                 .toList();
     }
 }

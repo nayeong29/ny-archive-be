@@ -4,7 +4,6 @@ import com.ny.archive.common.exception.CustomException;
 import com.ny.archive.common.exception.ErrorCode;
 import com.ny.archive.record.domain.Journey;
 import com.ny.archive.record.dto.JourneyRequestDto;
-import com.ny.archive.record.dto.JourneyResponseDto;
 import com.ny.archive.record.repository.JourneyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

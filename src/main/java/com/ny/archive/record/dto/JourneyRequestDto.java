@@ -50,6 +50,9 @@ public class JourneyRequestDto {
     @NotNull(message = "종료 날짜는 필수입니다")
     private LocalDate endDate;
 
+    @Schema(description = "썸네일로 지정할 사진의 인덱스 (0부터 시작)", example = "0")
+    private Integer thumbnailIndex;
+
     public Journey toEntity() {
         return Journey.builder()
                 .country(this.country)

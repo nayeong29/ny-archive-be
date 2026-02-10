@@ -3,13 +3,19 @@ package com.ny.archive.record.service;
 import com.ny.archive.common.exception.CustomException;
 import com.ny.archive.common.exception.ErrorCode;
 import com.ny.archive.record.domain.Journey;
+import com.ny.archive.record.domain.JourneyImage;
+import com.ny.archive.record.dto.JourneyDetailResponseDto;
+import com.ny.archive.record.dto.JourneyListResponseDto;
 import com.ny.archive.record.dto.JourneyRequestDto;
 import com.ny.archive.record.repository.JourneyRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -17,30 +23,47 @@ import java.util.List;
 public class JourneyService {
 
     private final JourneyRepository journeyRepository;
+    private final FileService fileService;
 
     @Transactional
-    public JourneyResponseDto createJourney(JourneyRequestDto requestDto) {
+    public JourneyDetailResponseDto createJourney(JourneyRequestDto requestDto,
+                                                  List<MultipartFile> multipartFiles) {
         Journey journey = requestDto.toEntity();
-        return new JourneyResponseDto(journeyRepository.save(journey));
+
+        if (!ObjectUtils.isEmpty(multipartFiles)) {
+            IntStream.range(0, multipartFiles.size()).forEach(i -> {
+                String imageName = fileService.saveFile(multipartFiles.get(i));
+                boolean isThumbnailIndex = requestDto.getThumbnailIndex() == i;
+
+                JourneyImage journeyImage = JourneyImage.builder()
+                        .fileName(imageName)
+                        .isThumbnail(isThumbnailIndex)
+                        .build();
+
+                journey.addJourneyImage(journeyImage);
+            });
+        }
+        
+        return new JourneyDetailResponseDto(journeyRepository.save(journey));
     }
 
     @Transactional
-    public JourneyResponseDto getJourney(Long id) {
+    public JourneyDetailResponseDto getJourney(Long id) {
         Journey journey = journeyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
-        return new JourneyResponseDto(journey);
+        return new JourneyDetailResponseDto(journey);
     }
 
     @Transactional
-    public List<JourneyResponseDto> getJourneyList() {
+    public JourneyListResponseDto getJourneyList() {
         return journeyRepository.findAllByOrderByStartDateDesc()
                 .stream()
-                .map(JourneyResponseDto::new)
+                .map(JourneyListResponseDto::new)
                 .toList();
     }
 
     @Transactional
-    public JourneyResponseDto updateJourney(Long id, JourneyRequestDto requestDto) {
+    public JourneyDetailResponseDto updateJourney(Long id, JourneyRequestDto requestDto) {
         Journey journey = journeyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
 
@@ -54,7 +77,7 @@ public class JourneyService {
                 requestDto.getEndDate()
         );
 
-        return new JourneyResponseDto(journey);
+        return new JourneyDetailResponseDto(journey);
     }
 
     @Transactional

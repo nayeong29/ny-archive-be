@@ -11,8 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -51,9 +49,6 @@ public class JourneyRequestDto {
             Schema.RequiredMode.REQUIRED)
     @NotNull(message = "종료 날짜는 필수입니다")
     private LocalDate endDate;
-
-    @Schema(description = "업로드할 이미지 파일명 리스트", example = "[\"sushi.jpg\", \"tokyo.jpg\"]")
-    private List<String> imageNames = new ArrayList<>(); // 엔티티 대신 파일명 리스트로 변경!
 
     public Journey toEntity() {
         return Journey.builder()

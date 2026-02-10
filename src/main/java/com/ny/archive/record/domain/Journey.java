@@ -50,7 +50,7 @@ public class Journey extends BaseEntity {
     @NotNull
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
+    @OneToMany(mappedBy = "journey", cascade = CascadeType.ALL, orphanRemoval = true, fetch =
             FetchType.LAZY)
     private List<JourneyImage> journeyImages = new ArrayList<>();
 

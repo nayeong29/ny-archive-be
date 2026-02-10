@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,33 +24,38 @@ public class BoardController {
 
     @Operation(summary = "방명록 작성")
     @PostMapping
-    public BoardResponseDto createBoard(@Valid @RequestBody BoardRequestDto requestDto) {
-        return boardService.createBoard(requestDto);
+    public ResponseEntity<BoardResponseDto> createBoard(@Valid @RequestBody BoardRequestDto requestDto) {
+        BoardResponseDto responseDto = boardService.createBoard(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @Operation(summary = "방명록 조회")
     @GetMapping("/{id}")
-    public BoardResponseDto getBoard(@Parameter(description = "게시글 ID") @PathVariable Long id) {
-        return boardService.getBoard(id);
+    public ResponseEntity<BoardResponseDto> getBoard(@Parameter(description = "게시글 ID") @PathVariable Long id) {
+        BoardResponseDto responseDto = boardService.getBoard(id);
+        return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "방명록 목록 전체 조회")
     @GetMapping
-    public List<BoardResponseDto> getBoardList() {
-        return boardService.getBoardList();
+    public ResponseEntity<List<BoardResponseDto>> getBoardList() {
+        List<BoardResponseDto> responseDtos = boardService.getBoardList();
+        return ResponseEntity.ok(responseDtos);
     }
 
     @Operation(summary = "방명록 수정")
     @PutMapping("/{id}")
-    public BoardResponseDto updateBoard(@Valid @Parameter(description = "게시글 ID") @PathVariable Long id,
-                                        @RequestBody BoardRequestDto requestDto) {
-        return boardService.updateBoard(id, requestDto);
+    public ResponseEntity<BoardResponseDto> updateBoard(@Valid @Parameter(description = "게시글 ID") @PathVariable Long id,
+                                                        @RequestBody BoardRequestDto requestDto) {
+        BoardResponseDto responseDto = boardService.updateBoard(id, requestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "방명록 삭제")
     @DeleteMapping("/{id}")
-    public Long deleteBoard(@Valid @Parameter(description = "게시글 ID") @PathVariable Long id,
-                            @RequestBody BoardDeleteRequestDto deleteRequestDto) {
-        return boardService.deleteBoard(id, deleteRequestDto);
+    public ResponseEntity<Long> deleteBoard(@Valid @Parameter(description = "게시글 ID") @PathVariable Long id,
+                                            @RequestBody BoardDeleteRequestDto deleteRequestDto) {
+        Long deletedId = boardService.deleteBoard(id, deleteRequestDto);
+        return ResponseEntity.ok(deletedId);
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor // Service Bean 주입을 위한 생성자 만들기 (Final Only)
-@RequestMapping("/api/boards")
+@RequestMapping("/api/board")
 @Tag(name = "방명록 API", description = "방명록 작성, 조회, 수정, 삭제 기능을 제공합니다.")
 public class BoardController {
     private final BoardService boardService;

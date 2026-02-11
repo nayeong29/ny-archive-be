@@ -17,6 +17,12 @@ spring:
       hibernate:
         format_sql: true
 
+  servlet:
+    # 파일 크기
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 150MB
+
 # 스웨거 설정
 springdoc:
   default-consume-media-type: application/json

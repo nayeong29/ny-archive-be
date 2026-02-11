@@ -20,6 +20,6 @@ public class WebConfig implements WebMvcConfigurer {
         // 브라우저에서 /images/** 로 시작하는 주소로 요청이 온다
         registry.addResourceHandler("/images/**")
                 // 내 로컬 폴더 안에서 파일을 찾아라
-                .addResourceLocations("file:/Users/nellie/backend-dev/images/");
+                .addResourceLocations("file:///Users/nellie/backend-dev/images/");
     }
 }

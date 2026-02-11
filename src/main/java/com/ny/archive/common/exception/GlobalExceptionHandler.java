@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 
 // 프로젝트 전체에서 발생하는 예외 감시
@@ -40,11 +41,19 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDto(errorMessage, "INVALID_INPUT"));
     }
 
+    // 파일 크기 제한
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    protected ResponseEntity<ErrorResponseDto> handleMaxUploadSizeExceededException(
+            MaxUploadSizeExceededException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto("파일 크기가 너무 큽니다. (최대 50MB)", "FILE_SIZE_EXCEEDED"));
+    }
+
     // 그 외 일반적인 에러들 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleException(Exception e) {
         log.error("알 수 없는 에러 발생: ", e);
-
         return ResponseEntity
                 .internalServerError() // HTTP 상태 코드 500 (서버 내부 오류)
                 .body(new ErrorResponseDto("관리자에게 문의하세요.", "INTERNAL_SERVER_ERROR"));

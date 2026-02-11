@@ -1,10 +1,22 @@
 package com.ny.archive.record.controller;
 
+import com.ny.archive.record.dto.JourneyDetailResponseDto;
+import com.ny.archive.record.dto.JourneyRequestDto;
 import com.ny.archive.record.service.JourneyService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -13,8 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class JourneyController {
     private final JourneyService journeyService;
 
-    public JourneyListResponseDto getJourneyList(@RequestBody JourneyRequestDto requestDto,
-                                                 List<MultipartFile> multipartFiles) {
-        journeyService.getJourneyList();
+    @Operation(summary = "여행 작성")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // 서버가 받아야 할 데이터가 2개라서 각각 이름을 붙여서 프론트에 요청
+    public ResponseEntity<JourneyDetailResponseDto> createJourney(@RequestPart("requestDto") @Valid JourneyRequestDto requestDto,
+                                                                  @RequestPart(value = "images",
+                                                                          required = false) List<MultipartFile> images
+    ) {
+        JourneyDetailResponseDto responseDto = journeyService.createJourney(requestDto, images);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 }

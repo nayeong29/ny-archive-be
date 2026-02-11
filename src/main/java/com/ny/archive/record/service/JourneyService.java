@@ -1,11 +1,8 @@
 package com.ny.archive.record.service;
 
-import com.ny.archive.common.exception.CustomException;
-import com.ny.archive.common.exception.ErrorCode;
 import com.ny.archive.record.domain.Journey;
 import com.ny.archive.record.domain.JourneyImage;
 import com.ny.archive.record.dto.JourneyDetailResponseDto;
-import com.ny.archive.record.dto.JourneyListResponseDto;
 import com.ny.archive.record.dto.JourneyRequestDto;
 import com.ny.archive.record.repository.JourneyRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +40,9 @@ public class JourneyService {
                 journey.addJourneyImage(journeyImage);
             });
         }
-        
-        return new JourneyDetailResponseDto(journeyRepository.save(journey));
+
+        Journey savedJourney = journeyRepository.save(journey);
+        return new JourneyDetailResponseDto(savedJourney);
     }
 
     @Transactional
@@ -53,41 +51,41 @@ public class JourneyService {
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
         return new JourneyDetailResponseDto(journey);
     }
-
-    @Transactional
-    public JourneyListResponseDto getJourneyList() {
-        return journeyRepository.findAllByOrderByStartDateDesc()
-                .stream()
-                .map(JourneyListResponseDto::new)
-                .toList();
-    }
-
-    @Transactional
-    public JourneyDetailResponseDto updateJourney(Long id, JourneyRequestDto requestDto) {
-        Journey journey = journeyRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
-
-        journey.update(
-                requestDto.getCountry(),
-                requestDto.getState(),
-                requestDto.getReview(),
-                requestDto.getRate(),
-                requestDto.getCategory(),
-                requestDto.getStartDate(),
-                requestDto.getEndDate()
-        );
-
-        return new JourneyDetailResponseDto(journey);
-    }
-
-    @Transactional
-    public Long deleteJourney(Long id) {
-        Journey journey = journeyRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
-
-        journeyRepository.delete(journey);
-        return journey.getId();
-    }
+//
+//    @Transactional
+//    public JourneyListResponseDto getJourneyList() {
+//        return journeyRepository.findAllByOrderByStartDateDesc()
+//                .stream()
+//                .map(JourneyListResponseDto::new)
+//                .toList();
+//    }
+//
+//    @Transactional
+//    public JourneyDetailResponseDto updateJourney(Long id, JourneyRequestDto requestDto) {
+//        Journey journey = journeyRepository.findById(id)
+//                .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
+//
+//        journey.update(
+//                requestDto.getCountry(),
+//                requestDto.getState(),
+//                requestDto.getReview(),
+//                requestDto.getRate(),
+//                requestDto.getCategory(),
+//                requestDto.getStartDate(),
+//                requestDto.getEndDate()
+//        );
+//
+//        return new JourneyDetailResponseDto(journey);
+//    }
+//
+//    @Transactional
+//    public Long deleteJourney(Long id) {
+//        Journey journey = journeyRepository.findById(id)
+//                .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
+//
+//        journeyRepository.delete(journey);
+//        return journey.getId();
+//    }
 
 
 }

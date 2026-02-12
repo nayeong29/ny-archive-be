@@ -2,6 +2,7 @@ package com.ny.archive.record.service;
 
 import com.ny.archive.common.exception.CustomException;
 import com.ny.archive.common.exception.ErrorCode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,9 @@ import java.util.UUID;
 @Service
 public class FileService {
     private final String uploadPath = "/Users/nellie/backend-dev/images/";
+
+    @Value("${file.prefix}")
+    private String prefix;
 
     public String saveFile(MultipartFile file) {
         try {
@@ -47,5 +51,10 @@ public class FileService {
         } catch (IOException e) {
             throw new CustomException(ErrorCode.FILE_DELETE_ERROR);
         }
+    }
+
+    public String getFullPath(String fileName) {
+        if (fileName == null) return null;
+        return prefix + fileName;
     }
 }

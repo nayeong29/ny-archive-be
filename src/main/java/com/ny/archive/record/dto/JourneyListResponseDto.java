@@ -20,7 +20,7 @@ public class JourneyListResponseDto {
 
     private final String thumbnailUrl;
 
-    public JourneyListResponseDto(Journey journey) {
+    public JourneyListResponseDto(Journey journey, String fullThumbnailUrl) {
         this.id = journey.getId();
         this.country = journey.getCountry();
         this.state = journey.getState();
@@ -29,6 +29,6 @@ public class JourneyListResponseDto {
         this.startDate = journey.getStartDate();
         this.endDate = journey.getEndDate();
         this.createdAt = journey.getCreatedAt().format(DateTimeFormatter.ofPattern("yy/MM/dd"));
-        this.thumbnailUrl = journey.getThumbnailUrl();
+        this.thumbnailUrl = fullThumbnailUrl;
     }
 }

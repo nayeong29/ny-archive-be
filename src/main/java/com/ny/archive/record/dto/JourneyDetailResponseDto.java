@@ -24,7 +24,9 @@ public class JourneyDetailResponseDto {
     private final String thumbnailUrl;
 
 
-    public JourneyDetailResponseDto(Journey journey) {
+    public JourneyDetailResponseDto(Journey journey,
+                                    List<String> fullImageUrls,
+                                    String fullThumbnailUrl) {
         this.id = journey.getId();
         this.country = journey.getCountry();
         this.state = journey.getState();
@@ -34,10 +36,7 @@ public class JourneyDetailResponseDto {
         this.startDate = journey.getStartDate();
         this.endDate = journey.getEndDate();
         this.createdAt = journey.getCreatedAt().format(DateTimeFormatter.ofPattern("yy/MM/dd"));
-        this.imageUrls = journey.getJourneyImages()
-                .stream()
-                .map(journeyImage -> journeyImage.getFullImagePath())
-                .toList();
-        this.thumbnailUrl = journey.getThumbnailUrl();
+        this.imageUrls = fullImageUrls;
+        this.thumbnailUrl = fullThumbnailUrl;
     }
 }

@@ -5,6 +5,7 @@ import com.ny.archive.common.exception.ErrorCode;
 import com.ny.archive.record.domain.Journey;
 import com.ny.archive.record.domain.JourneyImage;
 import com.ny.archive.record.dto.JourneyDetailResponseDto;
+import com.ny.archive.record.dto.JourneyListResponseDto;
 import com.ny.archive.record.dto.JourneyRequestDto;
 import com.ny.archive.record.repository.JourneyRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,25 +53,32 @@ public class JourneyService {
             });
         }
 
-        Journey savedJourney = journeyRepository.save(journey);
-        return new JourneyDetailResponseDto(savedJourney);
+        // thumbnailIndex 잘못 왔을때 대비
+        if (journey.getThumbnailUrl() == null && !journey.getJourneyImages().isEmpty()) {
+            journey.updateThumbnailUrl(journey.getJourneyImages().get(0).getFileName());
+        }
+
+        convertToDetailDto(journeyRepository.save(journey));
+
+        return convertToDetailDto(journeyRepository.save(journey));
+
     }
 
     @Transactional
     public JourneyDetailResponseDto getJourney(Long id) {
         Journey journey = journeyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
-        return new JourneyDetailResponseDto(journey);
+        return convertToDetailDto(journey);
     }
 
-//    @Transactional
-//    public JourneyListResponseDto getJourneyList() {
-//        return journeyRepository.findAllByOrderByStartDateDesc()
-//                .stream()
-//                .map(JourneyListResponseDto::new)
-//                .toList();
-//    }
-//
+    @Transactional
+    public List<JourneyListResponseDto> getJourneyList() {
+        return journeyRepository.findAllByOrderByStartDateDesc()
+                .stream()
+                .map(JourneyListResponseDto::new)
+                .toList();
+    }
+
 //    @Transactional
 //    public JourneyDetailResponseDto updateJourney(Long id, JourneyRequestDto requestDto) {
 //        Journey journey = journeyRepository.findById(id)

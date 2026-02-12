@@ -38,8 +38,8 @@ public class JourneyImage extends BaseEntity {
         this.journey = journey;
     }
 
-    // 이미지 Path
-    public String getFullImagePath() {
-        return IMAGE_PATH_PREFIX + this.fileName;
-    }
+//    // 이미지 Path
+//    public String getFullImagePath() {
+//        return IMAGE_PATH_PREFIX + this.fileName;
+//    }
 }

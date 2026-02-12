@@ -1,6 +1,7 @@
 package com.ny.archive.record.controller;
 
 import com.ny.archive.record.dto.JourneyDetailResponseDto;
+import com.ny.archive.record.dto.JourneyListResponseDto;
 import com.ny.archive.record.dto.JourneyRequestDto;
 import com.ny.archive.record.service.JourneyService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,9 +35,16 @@ public class JourneyController {
     }
 
     @Operation(summary = "특정 여행 조회")
-    @GetMapping
-    public ResponseEntity<JourneyDetailResponseDto> getJourney(@RequestParam("id") Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<JourneyDetailResponseDto> getJourney(@PathVariable Long id) {
         JourneyDetailResponseDto responseDto = journeyService.getJourney(id);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @Operation(summary = "여행 목록 조회")
+    @GetMapping
+    public ResponseEntity<List<JourneyListResponseDto>> getJourneyList() {
+        List<JourneyListResponseDto> responseDto = journeyService.getJourneyList();
         return ResponseEntity.ok(responseDto);
     }
 }

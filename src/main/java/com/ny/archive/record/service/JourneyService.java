@@ -7,6 +7,7 @@ import com.ny.archive.record.domain.JourneyImage;
 import com.ny.archive.record.dto.JourneyDetailResponseDto;
 import com.ny.archive.record.dto.JourneyListResponseDto;
 import com.ny.archive.record.dto.JourneyRequestDto;
+import com.ny.archive.record.mapper.JourneyResponseMapper;
 import com.ny.archive.record.repository.JourneyRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -24,6 +25,7 @@ public class JourneyService {
 
     private final JourneyRepository journeyRepository;
     private final FileService fileService;
+    private final JourneyResponseMapper journeyResponseMapper;
 
     @Transactional
     public JourneyDetailResponseDto createJourney(JourneyRequestDto requestDto,
@@ -58,24 +60,22 @@ public class JourneyService {
             journey.updateThumbnailUrl(journey.getJourneyImages().get(0).getFileName());
         }
 
-        convertToDetailDto(journeyRepository.save(journey));
-
-        return convertToDetailDto(journeyRepository.save(journey));
-
+        return journeyResponseMapper.toDetailDto(journeyRepository.save(journey));
     }
 
     @Transactional
     public JourneyDetailResponseDto getJourney(Long id) {
         Journey journey = journeyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
-        return convertToDetailDto(journey);
+
+        return journeyResponseMapper.toDetailDto(journey);
     }
 
     @Transactional
     public List<JourneyListResponseDto> getJourneyList() {
         return journeyRepository.findAllByOrderByStartDateDesc()
                 .stream()
-                .map(JourneyListResponseDto::new)
+                .map(journey -> journeyResponseMapper.toListDto(journey))
                 .toList();
     }
 

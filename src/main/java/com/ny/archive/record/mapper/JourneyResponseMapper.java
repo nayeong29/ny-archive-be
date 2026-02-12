@@ -15,7 +15,7 @@ public class JourneyResponseMapper {
 
     private final FileService fileService;
 
-    private JourneyDetailResponseDto toDetailDto(Journey journey) {
+    public JourneyDetailResponseDto toDetailDto(Journey journey) {
         List<String> fullImageUrls = journey.getJourneyImages().stream()
                 .map(img -> fileService.getFullPath(img.getFileName()))
                 .toList();
@@ -25,7 +25,7 @@ public class JourneyResponseMapper {
         return new JourneyDetailResponseDto(journey, fullImageUrls, fullThumbnailUrl);
     }
 
-    private JourneyListResponseDto toListDto(Journey journey) {
+    public JourneyListResponseDto toListDto(Journey journey) {
         String fullThumbnailUrl = fileService.getFullPath(journey.getThumbnailUrl());
         return new JourneyListResponseDto(journey, fullThumbnailUrl);
     }

@@ -4,12 +4,9 @@ import com.ny.archive.board.domain.Board;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@NoArgsConstructor // 기본 생성자
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자
 @Getter // private 값 꺼내오기
 @Builder // 테스트 코드
 @AllArgsConstructor // Builder를 위해 모든 필드 받는 생성자 만들어주기

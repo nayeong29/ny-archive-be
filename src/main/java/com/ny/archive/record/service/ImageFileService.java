@@ -11,22 +11,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.UUID;
 
 @Service
-public class FileService {
+public class ImageFileService {
     private final String uploadPath = "/Users/nellie/backend-dev/images/";
 
     @Value("${file.prefix}")
     private String prefix;
 
-    public String saveFile(MultipartFile file) {
+    public String saveFile(MultipartFile file, String imageFileKey) {
         try {
             // 사용자가 올린 파일 이름을 가져옴
             String originalFilename = file.getOriginalFilename();
 
-            // 파일명 중복 방지를 위해 유일한 값인 UUID를 이름 앞에 붙여줌
-            String savedFilename = UUID.randomUUID().toString() + "_" + originalFilename;
+            // 뒤에서부터 가장 먼저 만나는 점(.)의 위치 기준으로 확장자 추출
+            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+            // imageKey + 확장자로 이름 저장
+            String savedFilename = imageFileKey + extension;
 
             // 어느 폴더에 어떤 이름으로 저장할지 정하는 File 객체 만듦 (주소지 만들기)
             File target = new File(uploadPath + savedFilename);

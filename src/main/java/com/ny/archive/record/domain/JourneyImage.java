@@ -13,9 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JourneyImage extends BaseEntity {
 
-    // 경로
-    private static final String IMAGE_PATH_PREFIX = "/images/";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,20 +23,16 @@ public class JourneyImage extends BaseEntity {
 
     @Column(nullable = false)
     @NotNull
-    private String fileName;
+    private String imageFileName;
+
+    @Column(nullable = false, unique = true)
+    private String imageFileKey;
 
     @Builder
-    public JourneyImage(String fileName, boolean isThumbnail) {
-        this.fileName = fileName;
-    }
-
-    // 부모 연결: 외부 노출 방지를 위해 protected
-    protected void setJourney(Journey journey) {
+    public JourneyImage(Journey journey, String imageFileName, String imageFileKey) {
         this.journey = journey;
+        this.imageFileName = imageFileName;
+        this.imageFileKey = imageFileKey;
     }
 
-//    // 이미지 Path
-//    public String getFullImagePath() {
-//        return IMAGE_PATH_PREFIX + this.fileName;
-//    }
 }

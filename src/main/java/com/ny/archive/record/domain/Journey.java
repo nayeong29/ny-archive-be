@@ -78,7 +78,6 @@ public class Journey extends BaseEntity {
     // 연관관계 메서드: JourneyImage 추가 메서드 (사진 한 장 추가)
     public void addJourneyImage(JourneyImage journeyImage) {
         this.journeyImages.add(journeyImage); // 단일 객체 타입이 아니라서 add를 해줘야 함
-        journeyImage.setJourney(this);
     }
 
     // 사진 여러개 추가

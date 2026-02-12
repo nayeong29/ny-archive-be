@@ -54,8 +54,7 @@ public class Journey extends BaseEntity {
             FetchType.LAZY)
     private List<JourneyImage> journeyImages = new ArrayList<>();
 
-    @Column(nullable = false)
-    @NotNull
+    @Column(nullable = true)
     private String thumbnailUrl;
 
     @Builder

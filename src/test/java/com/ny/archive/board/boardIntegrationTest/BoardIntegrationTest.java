@@ -54,13 +54,13 @@ public class BoardIntegrationTest {
 
         // 2. When: MockMvc를 이용해 POST /api/boards 요청 보내기
         ResultActions resultActions = mockMvc.perform(
-                post("/api/boards")
+                post("/api/board")
                         .contentType(MediaType.APPLICATION_JSON) // 지금 보내는건 JSON 데이터임을 서버에 알림
                         .content(jsonRequest) // 실제 JSON 데이터를 본문에 담음
         );
 
-        // 3. Then: 응답 상태 코드가 200인지 확인
-        resultActions.andExpect(status().isOk())
+        // 3. Then: 응답 상태 코드가 201인지 확인
+        resultActions.andExpect(status().isCreated())
                 .andExpect(jsonPath("$.author").value("나영"));
 
         // (2) 실제로 DB에 잘 저장되었는지 Repository로 확인
@@ -74,7 +74,7 @@ public class BoardIntegrationTest {
 
         // 실제로 조회가 되는지 GET 요청을 이어서 보내보기
         mockMvc.perform(
-                        get("/api/boards/{id}", savedId))
+                        get("/api/board/{id}", savedId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedId))
                 .andExpect(jsonPath("$.author").value("나영"));
@@ -107,7 +107,7 @@ public class BoardIntegrationTest {
 
         // 2. When: 수정 요청하는 api 날리기
         ResultActions resultActions = mockMvc.perform(
-                put("/api/boards/{id}", savedId)
+                put("/api/board/{id}", savedId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest)
         );
@@ -148,7 +148,7 @@ public class BoardIntegrationTest {
 
         // When: 수정 API 호출
         ResultActions resultActions = mockMvc.perform(
-                put("/api/boards/{id}", savedId)
+                put("/api/board/{id}", savedId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest)
         );
@@ -187,7 +187,7 @@ public class BoardIntegrationTest {
 
         // 2. When: 삭제 api 호출
         ResultActions resultActions = mockMvc.perform(
-                delete("/api/boards/{id}", savedId)
+                delete("/api/board/{id}", savedId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest)
         );

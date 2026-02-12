@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -34,5 +31,12 @@ public class JourneyController {
     ) {
         JourneyDetailResponseDto responseDto = journeyService.createJourney(requestDto, images);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    @Operation(summary = "특정 여행 조회")
+    @GetMapping
+    public ResponseEntity<JourneyDetailResponseDto> getJourney(@RequestParam("id") Long id) {
+        JourneyDetailResponseDto responseDto = journeyService.getJourney(id);
+        return ResponseEntity.ok(responseDto);
     }
 }

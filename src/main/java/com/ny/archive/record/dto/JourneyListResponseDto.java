@@ -29,11 +29,6 @@ public class JourneyListResponseDto {
         this.startDate = journey.getStartDate();
         this.endDate = journey.getEndDate();
         this.createdAt = journey.getCreatedAt().format(DateTimeFormatter.ofPattern("yy/MM/dd"));
-
-        this.thumbnailUrl = journey.getJourneyImages().stream()
-                .filter(image -> image.isThumbnail()) // 썸네일 true인 객체 하나만 찾기
-                .findFirst() // 찾음
-                .map(image -> image.getFullImagePath()) // 그 하나의 객체를 이미지 경로 붙여서 변환하기
-                .orElse(null);
+        this.thumbnailUrl = journey.getThumbnailUrl();
     }
 }

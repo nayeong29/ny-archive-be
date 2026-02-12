@@ -54,6 +54,9 @@ public class Journey extends BaseEntity {
             FetchType.LAZY)
     private List<JourneyImage> journeyImages = new ArrayList<>();
 
+    @Column(nullable = false)
+    @NotNull
+    private String thumbnailUrl;
 
     @Builder
     public Journey(String country,
@@ -62,7 +65,8 @@ public class Journey extends BaseEntity {
                    Integer rate,
                    Category category,
                    LocalDate startDate,
-                   LocalDate endDate) {
+                   LocalDate endDate
+    ) {
         this.country = country;
         this.state = state;
         this.review = review;
@@ -99,5 +103,9 @@ public class Journey extends BaseEntity {
         this.category = category;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public void updateThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
     }
 }

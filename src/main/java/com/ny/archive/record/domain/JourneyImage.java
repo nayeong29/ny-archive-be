@@ -28,14 +28,9 @@ public class JourneyImage extends BaseEntity {
     @NotNull
     private String fileName;
 
-    @Column(nullable = false)
-    @NotNull
-    private boolean isThumbnail = false; // 기본적으로 썸네일 아님을 명시
-
     @Builder
     public JourneyImage(String fileName, boolean isThumbnail) {
         this.fileName = fileName;
-        this.isThumbnail = isThumbnail;
     }
 
     // 부모 연결: 외부 노출 방지를 위해 protected

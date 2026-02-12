@@ -20,8 +20,8 @@ public class JourneyDetailResponseDto {
     private final LocalDate startDate;
     private final LocalDate endDate;
     private final String createdAt;
-
     private final List<String> imageUrls;
+    private final String thumbnailUrl;
 
 
     public JourneyDetailResponseDto(Journey journey) {
@@ -34,10 +34,10 @@ public class JourneyDetailResponseDto {
         this.startDate = journey.getStartDate();
         this.endDate = journey.getEndDate();
         this.createdAt = journey.getCreatedAt().format(DateTimeFormatter.ofPattern("yy/MM/dd"));
-
         this.imageUrls = journey.getJourneyImages()
                 .stream()
                 .map(journeyImage -> journeyImage.getFullImagePath())
                 .toList();
+        this.thumbnailUrl = journey.getThumbnailUrl();
     }
 }

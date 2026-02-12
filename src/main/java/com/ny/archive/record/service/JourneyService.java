@@ -1,5 +1,7 @@
 package com.ny.archive.record.service;
 
+import com.ny.archive.common.exception.CustomException;
+import com.ny.archive.common.exception.ErrorCode;
 import com.ny.archive.record.domain.Journey;
 import com.ny.archive.record.domain.JourneyImage;
 import com.ny.archive.record.dto.JourneyDetailResponseDto;
@@ -27,14 +29,23 @@ public class JourneyService {
                                                   List<MultipartFile> multipartFiles) {
         Journey journey = requestDto.toEntity();
 
-        if (!ObjectUtils.isEmpty(multipartFiles)) {
+        if (!ObjectUtils.isEmpty(multipartFiles)) { // 리스트 존재 검사
             IntStream.range(0, multipartFiles.size()).forEach(i -> {
-                String imageName = fileService.saveFile(multipartFiles.get(i));
-                boolean isThumbnailIndex = requestDto.getThumbnailIndex() == i;
+
+                MultipartFile multipartFile = multipartFiles.get(i);
+
+                if (multipartFile.isEmpty()) {
+                    return; // 파일이 비었는지 검사
+                }
+
+                String imageName = fileService.saveFile(multipartFile);
+
+                if (requestDto.getThumbnailIndex() == i) {
+                    journey.updateThumbnailUrl(imageName);
+                }
 
                 JourneyImage journeyImage = JourneyImage.builder()
                         .fileName(imageName)
-                        .isThumbnail(isThumbnailIndex)
                         .build();
 
                 journey.addJourneyImage(journeyImage);
@@ -51,7 +62,7 @@ public class JourneyService {
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
         return new JourneyDetailResponseDto(journey);
     }
-//
+
 //    @Transactional
 //    public JourneyListResponseDto getJourneyList() {
 //        return journeyRepository.findAllByOrderByStartDateDesc()

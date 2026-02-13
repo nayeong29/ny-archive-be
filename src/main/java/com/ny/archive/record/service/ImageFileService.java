@@ -43,10 +43,10 @@ public class ImageFileService {
         }
     }
 
-    public void deleteFile(String filename) {
+    public void deleteFile(String imageFileName) {
         try {
             // 파일 이름으로 로컬 저장소 경로 찾아냄
-            Path path = Paths.get(uploadPath + filename);
+            Path path = Paths.get(uploadPath + imageFileName);
 
             // 파일이 있으면 지우고 없으면 넘어감
             Files.deleteIfExists(path);

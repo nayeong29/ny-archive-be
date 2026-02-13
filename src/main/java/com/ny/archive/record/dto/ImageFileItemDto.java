@@ -16,5 +16,5 @@ public class ImageFileItemDto {
     private String imageKey;
 
     @Schema(description = "이미지 상태 (NEW / EXISTING)", example = "NEW")
-    private String type;
+    private ImageType type;
 }

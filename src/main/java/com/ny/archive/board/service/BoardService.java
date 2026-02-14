@@ -25,15 +25,13 @@ public class BoardService {
         Board board = requestDto.toEntity();
         return new BoardResponseDto(boardRepository.save(board));
     }
-
-    @Transactional
+    
     public BoardResponseDto getBoard(Long id) {
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
         return new BoardResponseDto(board);
     }
 
-    @Transactional
     public List<BoardResponseDto> getBoardList() {
         return boardRepository.findAllByOrderByCreatedAtDesc()
                 .stream().map(BoardResponseDto::new)

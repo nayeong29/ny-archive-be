@@ -24,14 +24,20 @@ public class ImageFileService {
             // 사용자가 올린 파일 이름을 가져옴
             String originalFilename = file.getOriginalFilename();
 
-            // 뒤에서부터 가장 먼저 만나는 점(.)의 위치 기준으로 확장자 추출
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            // 확장자 존재 확인
+            int dotIndex = originalFilename.lastIndexOf(".");
+            if (dotIndex < 0) {
+                throw new CustomException(ErrorCode.INVALID_FILE_EXTENSION);
+            }
+
+            // 확장자 추출
+            String extension = originalFilename.substring(dotIndex);
 
             // imageKey + 확장자로 이름 저장
             String savedFilename = imageFileKey + extension;
 
             // 어느 폴더에 어떤 이름으로 저장할지 정하는 File 객체 만듦 (주소지 만들기)
-            File target = new File(uploadPath + savedFilename);
+            File target = new File(uploadPath, savedFilename);
 
             // file 을 target 주소로 넣음
             file.transferTo(target);
@@ -46,7 +52,7 @@ public class ImageFileService {
     public void deleteFile(String imageFileName) {
         try {
             // 파일 이름으로 로컬 저장소 경로 찾아냄
-            Path path = Paths.get(uploadPath + imageFileName);
+            Path path = Paths.get(uploadPath, imageFileName);
 
             // 파일이 있으면 지우고 없으면 넘어감
             Files.deleteIfExists(path);

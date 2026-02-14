@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,8 +23,7 @@ public class JourneyController {
     private final JourneyService journeyService;
 
     @Operation(summary = "여행 작성")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // 서버가 받아야 할 데이터가 2개라서 각각 이름을 붙여서 프론트에 요청
+    @PostMapping
     public ResponseEntity<JourneyDetailResponseDto> createJourney(@RequestPart("requestDto") @Valid JourneyRequestDto requestDto,
                                                                   @RequestPart(value = "images",
                                                                           required = false) List<MultipartFile> images
@@ -47,4 +45,21 @@ public class JourneyController {
         List<JourneyListResponseDto> responseDto = journeyService.getJourneyList();
         return ResponseEntity.ok(responseDto);
     }
+
+    @Operation(summary = "특정 여행 수정")
+    @PutMapping("/{id}")
+    public ResponseEntity<JourneyDetailResponseDto> updateJourney(@PathVariable Long id,
+                                                                  @RequestPart("requestDto") @Valid JourneyRequestDto requestDto,
+                                                                  @RequestPart(value = "images",
+                                                                          required = false) List<MultipartFile> images) {
+        JourneyDetailResponseDto responseDto = journeyService.updateJourney(id, requestDto, images);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @Operation(summary = "특정 여행 삭제")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Long> deleteJourney(@PathVariable Long id) {
+        return ResponseEntity.ok(journeyService.deleteJourney(id));
+    }
+
 }

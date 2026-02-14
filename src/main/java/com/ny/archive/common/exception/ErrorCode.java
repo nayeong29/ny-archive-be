@@ -24,6 +24,8 @@ public enum ErrorCode {
     FILE_NOT_FOUND("해당 파일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     FILE_DELETE_ERROR("파일 삭제 중 오류가 발생했습니다.", HttpStatus.BAD_REQUEST),
     INVALID_FILE_TYPE("지원하지 않는 파일 형식입니다.", HttpStatus.BAD_REQUEST),
+    INVALID_FILE_EXTENSION("확장자가 없는 파일은 업로드할 수 없습니다.", HttpStatus.BAD_REQUEST),
+    DUPLICATED_IMAGE_KEY("이미지 키가 중복되었습니다.", HttpStatus.BAD_REQUEST),
     ;
 
     private final String message;

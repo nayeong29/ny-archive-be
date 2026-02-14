@@ -45,16 +45,16 @@ public class BoardController {
 
     @Operation(summary = "방명록 수정")
     @PutMapping("/{id}")
-    public ResponseEntity<BoardResponseDto> updateBoard(@Valid @Parameter(description = "게시글 ID") @PathVariable Long id,
-                                                        @RequestBody BoardRequestDto requestDto) {
+    public ResponseEntity<BoardResponseDto> updateBoard(@Parameter(description = "게시글 ID") @PathVariable Long id,
+                                                        @Valid @RequestBody BoardRequestDto requestDto) {
         BoardResponseDto responseDto = boardService.updateBoard(id, requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @Operation(summary = "방명록 삭제")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Long> deleteBoard(@Valid @Parameter(description = "게시글 ID") @PathVariable Long id,
-                                            @RequestBody BoardDeleteRequestDto deleteRequestDto) {
+    public ResponseEntity<Long> deleteBoard(@Parameter(description = "게시글 ID") @PathVariable Long id,
+                                            @Valid @RequestBody BoardDeleteRequestDto deleteRequestDto) {
         Long deletedId = boardService.deleteBoard(id, deleteRequestDto);
         return ResponseEntity.ok(deletedId);
     }

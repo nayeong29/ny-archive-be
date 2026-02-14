@@ -28,57 +28,63 @@ public class JourneyService {
     @Transactional
     public JourneyDetailResponseDto createJourney(JourneyRequestDto requestDto,
                                                   List<MultipartFile> multipartFiles) {
-        // 1. 여행 객체 생성
+
+        // 1, NullPointerException 방지
+        List<MultipartFile> imageFiles =
+                Optional.ofNullable(multipartFiles).orElse(Collections.emptyList());
+        List<ImageFileItemDto> imageItems = Optional.ofNullable(requestDto.getImageFiles())
+                .orElse(Collections.emptyList());
+
+        // 2. 여행 객체 생성
         Journey journey = requestDto.toEntity();
 
-        // 2. 파일 리스트 <키, 파일> 기준 Map 변환
-        Map<String, MultipartFile> imageFileMap = ObjectUtils.isEmpty(multipartFiles) ?
-                Collections.emptyMap() : multipartFiles.stream()
-                .collect(Collectors.toMap(file -> {
-                    String name = file.getOriginalFilename();
-                    return name.substring(0, name.lastIndexOf("."));
-                }, file -> file));
+        // 3. 파일 Map 변환 (key: formData의 name 필드)
+        Map<String, MultipartFile> imageFileMap = imageFiles.stream()
+                .collect(Collectors.toMap(file -> file.getName(),
+                                          file -> file,
+                                          (existing, duplicate) -> {
+                                              throw new CustomException(ErrorCode.DUPLICATED_IMAGE_KEY);
+                                          }));
 
-        // 3. RequestDto 에서 필요한 값 꺼내서 JourneyImage 객체 생성 및 저장
-        if (!ObjectUtils.isEmpty(requestDto.getImageFiles())) {
-            for (ImageFileItemDto fileItemDto : requestDto.getImageFiles()) {
-                MultipartFile imageFile = imageFileMap.get(fileItemDto.getImageKey());
+        // 4. RequestDto 에서 필요한 값 꺼내서 JourneyImage 객체 생성 및 저장
+        for (ImageFileItemDto fileItemDto : imageItems) {
+            // 위에서 만든 Map에서 ImageKey를 통해 실제 파일을 찾아옴
+            MultipartFile imageFile = imageFileMap.get(fileItemDto.getImageKey());
 
-                if (ObjectUtils.isEmpty(imageFile)) {
-                    throw new CustomException(ErrorCode.FILE_NOT_FOUND);
-                }
-
-                // fileService 호출해서 저장될 이름으로 변경
-                String savedFileName = imageFileService.saveFile(imageFile,
-                                                                 fileItemDto.getImageKey());
-
-                // 썸네일 없는 경우에는 제일 첫번째로 루프 도는 savedFile이 썸네일
-                if (ObjectUtils.isEmpty(journey.getThumbnailUrl())) {
-                    journey.updateThumbnailUrl(savedFileName);
-                }
-
-                // 돌다가 진자 썸네일 찾으면 썸네일 설정
-                if (fileItemDto.getImageKey().equals(requestDto.getThumbnailKey())) {
-                    journey.updateThumbnailUrl(savedFileName);
-                }
-
-                // JourneyImage 객체 생성
-                JourneyImage journeyImage = JourneyImage.builder()
-                        .journey(journey)
-                        .imageFileName(savedFileName)
-                        .imageFileKey(fileItemDto.getImageKey())
-                        .build();
-
-                // 생성한 객체 journey에 연결
-                journey.addJourneyImage(journeyImage);
+            // 만약 imageItems은 존재하는데 그에 맞는 파일이 없는 경우
+            if (ObjectUtils.isEmpty(imageFile)) {
+                throw new CustomException(ErrorCode.FILE_NOT_FOUND);
             }
+
+            // fileService 호출해서 이름 변경 및 물리 파일 저장 (UUID.jpg)
+            String savedFileName = imageFileService.saveFile(imageFile,
+                                                             fileItemDto.getImageKey());
+
+            // 1. 썸네일이 비어있음 -> 제일 첫번째 사진을 썸네일로 지정
+            // 2. 이후 진짜 썸네일이 들어오면 해당 사진을 썸네일로 지정
+            // 3. 썸네일 키가 존재하지 않아도 1번 로직에 의해 제일 첫번째 사진이 썸네일이 됨
+            if (ObjectUtils.isEmpty(journey.getThumbnailUrl()) ||
+                    Objects.equals(fileItemDto.getImageKey(),
+                                   requestDto.getThumbnailKey())) {
+                journey.updateThumbnailUrl(savedFileName);
+            }
+
+            // JourneyImage 객체 생성
+            JourneyImage journeyImage = JourneyImage.builder()
+                    .journey(journey)
+                    .imageFileName(savedFileName)
+                    .imageFileKey(fileItemDto.getImageKey())
+                    .build();
+
+            // 생성한 객체 journey에 연결
+            journey.addJourneyImage(journeyImage);
         }
+
 
         // 4. toDetailDto로 파일 prefix + fileName 형태로 변경해서 return
         return journeyResponseMapper.toDetailDto(journeyRepository.save(journey));
     }
 
-    @Transactional
     public JourneyDetailResponseDto getJourney(Long id) {
         Journey journey = journeyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
@@ -86,7 +92,6 @@ public class JourneyService {
         return journeyResponseMapper.toDetailDto(journey);
     }
 
-    @Transactional
     public List<JourneyListResponseDto> getJourneyList() {
         return journeyRepository.findAllByOrderByStartDateDesc()
                 .stream()
@@ -95,20 +100,19 @@ public class JourneyService {
     }
 
     @Transactional
-    public JourneyDetailResponseDto updateJourney(Long id, JourneyRequestDto requestDto,
+    public JourneyDetailResponseDto updateJourney(Long id,
+                                                  JourneyRequestDto requestDto,
                                                   List<MultipartFile> multipartFiles) {
         Journey journey = journeyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
 
-        journey.update(
-                requestDto.getCountry(),
-                requestDto.getState(),
-                requestDto.getReview(),
-                requestDto.getRate(),
-                requestDto.getCategory(),
-                requestDto.getStartDate(),
-                requestDto.getEndDate()
-        );
+        journey.update(requestDto.getCountry(),
+                       requestDto.getState(),
+                       requestDto.getReview(),
+                       requestDto.getRate(),
+                       requestDto.getCategory(),
+                       requestDto.getStartDate(),
+                       requestDto.getEndDate());
 
         // --- 사진 수정 로직 ---
 
@@ -183,9 +187,20 @@ public class JourneyService {
         Journey journey = journeyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
 
-        journeyRepository.delete(journey);
-        return journey.getId();
-    }
+        // 삭제 할 물리 파일 이름들을 리슽트로 모으기
+        List<String> filesToDelete = journey.getJourneyImages()
+                .stream()
+                .map(image -> image.getImageFileName())
+                .toList();
 
+        // DB에서 저니 삭제하기
+        journeyRepository.delete(journey);
+
+        // 물리 파일 지우기
+        filesToDelete.forEach(imageFile -> imageFileService.deleteFile(imageFile));
+
+        // id return 하기
+        return id;
+    }
 
 }

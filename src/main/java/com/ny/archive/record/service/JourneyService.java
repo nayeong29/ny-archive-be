@@ -116,14 +116,18 @@ public class JourneyService {
 
         // --- 사진 수정 로직 ---
 
+        List<MultipartFile> imageFiles = Optional.ofNullable(multipartFiles)
+                .orElse(Collections.emptyList());
+        List<ImageFileItemDto> imageItems = Optional.ofNullable(requestDto.getImageFiles())
+                .orElse(Collections.emptyList());
+
         // 1. [기존 데이터 정리] 살려야 할 이미지 키(UUID) 목록을 Set으로 준비
-        Set<String> existFileKeys = requestDto.getImageFiles()
+        Set<String> existFileKeys = imageItems
                 .stream()
                 .map(image -> image.getImageKey())
                 .collect(Collectors.toSet());
 
         // 2. [삭제 처리] DB에는 있지만, 요청 DTO(stayKeys)에는 없는 사진들을 찾아 삭제하기
-
         List<String> filesToDelete = new ArrayList<>(); // 삭제할 파일명들을 담을 리스트
         journey.getJourneyImages().removeIf(image -> {
             if (!existFileKeys.contains(image.getImageFileKey())) {
@@ -134,16 +138,16 @@ public class JourneyService {
         });
 
         // 3. [파일 준비] 새로 업로드된 multipartFiles를 '파일명(uuid)' 기준 Map으로 만들기
-        Map<String, MultipartFile> newImageFileMap = ObjectUtils.isEmpty(multipartFiles) ?
-                Collections.emptyMap() : multipartFiles.stream()
-                .collect(Collectors.toMap(file -> {
-                    String name = file.getOriginalFilename();
-                    return name.substring(0, name.lastIndexOf("."));
-                }, file -> file));
+        Map<String, MultipartFile> newImageFileMap = imageFiles.stream()
+                .collect(Collectors.toMap(file -> file.getName(),
+                                          file -> file,
+                                          (existing, duplicate) -> {
+                                              throw new CustomException(ErrorCode.DUPLICATED_IMAGE_KEY);
+                                          }));
 
 
         // 4. [추가 및 유지] 요청 DTO의 images 리스트를 순회하며 작업하기
-        for (ImageFileItemDto fileItemDto : requestDto.getImageFiles()) {
+        for (ImageFileItemDto fileItemDto : imageItems) {
             if (ImageType.NEW.equals(fileItemDto.getType())) {
                 MultipartFile file = newImageFileMap.get(fileItemDto.getImageKey());
 
@@ -168,10 +172,11 @@ public class JourneyService {
         List<JourneyImage> finalImages = journey.getJourneyImages();
 
         String thumbnailImage = finalImages.stream()
-                .filter(image -> requestDto.getThumbnailKey().equals(image.getImageFileKey()))
+                .filter(image -> Objects.equals(image.getImageFileKey(),
+                                                requestDto.getThumbnailKey()))
                 .map(image -> image.getImageFileName())
                 .findFirst()
-                .orElseGet(() -> finalImages.isEmpty() ? "" : finalImages.get(0)
+                .orElseGet(() -> finalImages.isEmpty() ? null : finalImages.get(0)
                         .getImageFileName());
 
         journey.updateThumbnailUrl(thumbnailImage);

@@ -47,7 +47,7 @@ public class JourneyController {
     }
 
     @Operation(summary = "특정 여행 수정")
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<JourneyDetailResponseDto> updateJourney(@PathVariable Long id,
                                                                   @RequestPart("requestDto") @Valid JourneyRequestDto requestDto,
                                                                   MultipartHttpServletRequest servletRequest) {

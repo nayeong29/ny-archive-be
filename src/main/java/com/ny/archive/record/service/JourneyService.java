@@ -27,26 +27,16 @@ public class JourneyService {
 
     @Transactional
     public JourneyDetailResponseDto createJourney(JourneyRequestDto requestDto,
-                                                  List<MultipartFile> multipartFiles) {
+                                                  Map<String, MultipartFile> imageFileMap) {
 
         // 1, NullPointerException 방지
-        List<MultipartFile> imageFiles =
-                Optional.ofNullable(multipartFiles).orElse(Collections.emptyList());
         List<ImageFileItemDto> imageItems = Optional.ofNullable(requestDto.getImageFiles())
                 .orElse(Collections.emptyList());
 
         // 2. 여행 객체 생성
         Journey journey = requestDto.toEntity();
 
-        // 3. 파일 Map 변환 (key: formData의 name 필드)
-        Map<String, MultipartFile> imageFileMap = imageFiles.stream()
-                .collect(Collectors.toMap(file -> file.getName(),
-                                          file -> file,
-                                          (existing, duplicate) -> {
-                                              throw new CustomException(ErrorCode.DUPLICATED_IMAGE_KEY);
-                                          }));
-
-        // 4. RequestDto 에서 필요한 값 꺼내서 JourneyImage 객체 생성 및 저장
+        // 3. RequestDto 에서 필요한 값 꺼내서 JourneyImage 객체 생성 및 저장
         for (ImageFileItemDto fileItemDto : imageItems) {
             // 위에서 만든 Map에서 ImageKey를 통해 실제 파일을 찾아옴
             MultipartFile imageFile = imageFileMap.get(fileItemDto.getImageKey());
@@ -102,7 +92,7 @@ public class JourneyService {
     @Transactional
     public JourneyDetailResponseDto updateJourney(Long id,
                                                   JourneyRequestDto requestDto,
-                                                  List<MultipartFile> multipartFiles) {
+                                                  Map<String, MultipartFile> imageFileMap) {
         Journey journey = journeyRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.JOURNEY_NOT_FOUND));
 
@@ -116,8 +106,6 @@ public class JourneyService {
 
         // --- 사진 수정 로직 ---
 
-        List<MultipartFile> imageFiles = Optional.ofNullable(multipartFiles)
-                .orElse(Collections.emptyList());
         List<ImageFileItemDto> imageItems = Optional.ofNullable(requestDto.getImageFiles())
                 .orElse(Collections.emptyList());
 
@@ -137,19 +125,10 @@ public class JourneyService {
             return false; // 안맞으면 false -> 안 지움
         });
 
-        // 3. [파일 준비] 새로 업로드된 multipartFiles를 '파일명(uuid)' 기준 Map으로 만들기
-        Map<String, MultipartFile> newImageFileMap = imageFiles.stream()
-                .collect(Collectors.toMap(file -> file.getName(),
-                                          file -> file,
-                                          (existing, duplicate) -> {
-                                              throw new CustomException(ErrorCode.DUPLICATED_IMAGE_KEY);
-                                          }));
-
-
         // 4. [추가 및 유지] 요청 DTO의 images 리스트를 순회하며 작업하기
         for (ImageFileItemDto fileItemDto : imageItems) {
             if (ImageType.NEW.equals(fileItemDto.getType())) {
-                MultipartFile file = newImageFileMap.get(fileItemDto.getImageKey());
+                MultipartFile file = imageFileMap.get(fileItemDto.getImageKey());
 
                 if (ObjectUtils.isEmpty(file)) {
                     throw new CustomException(ErrorCode.FILE_NOT_FOUND);

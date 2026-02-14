@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.List;
 
@@ -25,10 +25,10 @@ public class JourneyController {
     @Operation(summary = "여행 작성")
     @PostMapping
     public ResponseEntity<JourneyDetailResponseDto> createJourney(@RequestPart("requestDto") @Valid JourneyRequestDto requestDto,
-                                                                  @RequestPart(value = "images",
-                                                                          required = false) List<MultipartFile> images
+                                                                  MultipartHttpServletRequest servletRequest
     ) {
-        JourneyDetailResponseDto responseDto = journeyService.createJourney(requestDto, images);
+        JourneyDetailResponseDto responseDto = journeyService.createJourney(requestDto,
+                                                                            servletRequest.getFileMap());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -50,9 +50,10 @@ public class JourneyController {
     @PutMapping("/{id}")
     public ResponseEntity<JourneyDetailResponseDto> updateJourney(@PathVariable Long id,
                                                                   @RequestPart("requestDto") @Valid JourneyRequestDto requestDto,
-                                                                  @RequestPart(value = "images",
-                                                                          required = false) List<MultipartFile> images) {
-        JourneyDetailResponseDto responseDto = journeyService.updateJourney(id, requestDto, images);
+                                                                  MultipartHttpServletRequest servletRequest) {
+        JourneyDetailResponseDto responseDto = journeyService.updateJourney(id,
+                                                                            requestDto,
+                                                                            servletRequest.getFileMap());
         return ResponseEntity.ok(responseDto);
     }
 

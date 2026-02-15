@@ -1,0 +1,22 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${DB_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+aws:
+  region: ${AWS_REGION}
+  s3:
+    bucket: ny-archive-s3
+    base-url: https://ny-archive-s3.s3.${aws.region}.amazonaws.com/
+
+file:
+  prefix: /images/
